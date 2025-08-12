@@ -1,0 +1,40 @@
+openapi: 3.1.0
+info:
+  title: Belthera Proxy API
+  version: "1.1"
+servers:
+  - url: https://YOUR_VERCEL_DOMAIN
+paths:
+  /api/chat:
+    post:
+      operationId: beltheraChat
+      description: Forwards messages[] to OpenAI and returns reply+raw.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                  description: Optional OpenAI chat model (default gpt-4.1-mini)
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role: { type: string, enum: [system, user, assistant] }
+                      content: { type: string }
+                  minItems: 1
+              required: [messages]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reply: { type: string }
+                  raw: { type: object }
