@@ -3,23 +3,18 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "POST, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        },
-        {
-          "key": "Access-Control-Max-Age",
-          "value": "86400"
-        }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" },
+        { "key": "Access-Control-Max-Age", "value": "86400" }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/external-gate.html?to=https%3A%2F%2Fchatgpt.com%2Fg%2Fg-689bc3aaf2b88191afb5d6baa9770f4f-belthera-gamjeongriding-taro",
+      "permanent": false
     }
   ]
 }
