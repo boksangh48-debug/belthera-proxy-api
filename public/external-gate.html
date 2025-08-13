@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Belthera 감정리딩 타로</title>
+<title>Belthera 감정리딩 타로 — GPT 챗봇</title>
 
 <!-- Open Graph / SNS 미리보기 (썸네일: 업로드한 사진) -->
 <meta property="og:url" content="https://belthera-proxy-api.vercel.app/external-gate.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Belthera 감정리딩 타로">
+<meta property="og:title" content="Belthera 감정리딩 타로 — GPT 챗봇">
 <meta property="og:description" content="하루 3분, 마음의 리듬을 읽어드립니다. 인앱에서도 안전 브라우저로 전환!">
 <meta property="og:image" content="https://belthera-proxy-api.vercel.app/KakaoTalk_20250807_083829974.jpg">
 <meta property="og:image:width" content="800">
 <meta property="og:image:height" content="800">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Belthera 감정리딩 타로">
+<meta name="twitter:title" content="Belthera 감정리딩 타로 — GPT 챗봇">
 <meta name="twitter:description" content="하루 3분, 마음의 리듬을 읽어드립니다.">
 <meta name="twitter:image" content="https://belthera-proxy-api.vercel.app/KakaoTalk_20250807_083829974.jpg">
 <link rel="canonical" href="https://belthera-proxy-api.vercel.app/external-gate.html" />
@@ -25,8 +25,9 @@
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Arial;margin:0;background:var(--bg);color:var(--fg)}
   .wrap{max-width:720px;margin:0 auto;padding:24px}
   .card{padding:22px;border:1px solid var(--line);border-radius:18px;background:#111;box-shadow:0 10px 20px rgba(0,0,0,.25)}
-  h1{margin:0 0 10px;font-size:22px}
+  h1{margin:0 0 10px;font-size:26px}
   p{margin:8px 0;color:var(--muted)}
+  .dest{margin:6px 0 0;color:#cbd5e1;font-size:14px}
   .btn{display:block;width:100%;text-align:center;margin-top:14px;padding:16px;border-radius:14px;border:0;
        background:var(--accent);color:#001410;font-weight:800;text-decoration:none;font-size:17px}
   .row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
@@ -47,10 +48,11 @@
 <div class="wrap">
   <div class="card">
     <h1>보안 브라우저로 열어드릴게요</h1>
-    <p>현재 창(인앱 브라우저)에선 로그인/결제가 제한될 수 있어요.<br>안전한 브라우저(사파리/크롬)로 열어주세요.</p>
+    <p>현재 창(인앱 브라우저)에서는 로그인/결제가 제한될 수 있어요. 안전한 브라우저(사파리/크롬)로 열어주세요.</p>
+    <p class="dest">🎯 목적지: <strong>Belthera 감정리딩 타로 GPT</strong></p>
 
-    <!-- 메인 CTA -->
-    <a id="openExternal" class="btn" target="_blank" rel="noopener">사파리/크롬으로 열기</a>
+    <!-- 메인 CTA (GPT 표기) -->
+    <a id="openExternal" class="btn" target="_blank" rel="noopener">🤖 GPT 챗봇 열기 (사파리/크롬)</a>
 
     <!-- 보조 액션 -->
     <div class="row">
@@ -77,7 +79,7 @@
     <div class="steps">
       1) 화면 아래 <b>공유</b> 버튼(⬆️) 탭<br>
       2) 아래로 스크롤 → <b>사파리로 열기</b> 선택<br>
-      3) 또는 위의 <b>사파리/크롬으로 열기</b> 버튼을 한 번 더 탭
+      3) 또는 위의 <b>GPT 챗봇 열기</b> 버튼을 한 번 더 탭
     </div>
     <a id="closeOverlay" class="close" href="#">확인</a>
   </div>
@@ -102,7 +104,7 @@
   const isIOS = /iphone|ipad|ipod/.test(ua);
   const isInApp = /(kakao|line|fbav|instagram|naver|daum|wv)/.test(ua) || (window.navigator.standalone === false);
 
-  // 첫 터치 시 iOS에서 새 탭 오픈 시도 (사용자 제스처로 인정)
+  // iOS 인앱: 첫 터치/클릭을 사용자 제스처로 잡아 새 탭 오픈 시도
   if (isIOS && isInApp) {
     const tryOpenOnce = () => {
       window.open(target, '_blank', 'noopener');
@@ -113,24 +115,24 @@
     document.addEventListener('click', tryOpenOnce, {once:true});
   }
 
-  // 안드로이드는 인텐트로 외부 크롬 시도 (버튼 눌렀을 때)
+  // 메인 버튼 클릭 시 처리
   openBtn.addEventListener('click', (e)=>{
     if (isAndroid && isInApp) {
+      // 안드로이드 인앱: 크롬 인텐트
       e.preventDefault();
       const noScheme = target.replace(/^https?:\/\//,'');
       const intent = `intent://${noScheme}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(target)};end`;
       location.href = intent;
     } else if (isIOS && isInApp) {
-      // iOS 인앱: 버튼 누르면 오버레이로 안내 + 새 탭 시도
+      // iOS 인앱: 가이드 오버레이 + 새 탭 시도
       overlay.style.display = 'flex';
-      // 보조로 한 번 더 오픈 시도
       setTimeout(()=>window.open(target, '_blank', 'noopener'), 0);
-      // 기본 동작은 유지(새 탭 target)
+      // 기본 target=_blank 동작도 그대로
     }
-    // 일반 브라우저에서는 a[target=_blank] 기본 동작
+    // 일반 브라우저: 기본 동작으로 새 탭 열림
   });
 
-  // iOS 가이드 수동 표시
+  // iOS 가이드 수동 표시/닫기
   showGuide.addEventListener('click', (e)=>{ e.preventDefault(); overlay.style.display='flex'; });
   closeOverlay.addEventListener('click', (e)=>{ e.preventDefault(); overlay.style.display='none'; });
 
