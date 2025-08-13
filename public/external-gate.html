@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Belthera 감정리딩 타로</title>
 
-<!-- ✅ Open Graph / SNS 미리보기 설정 (썸네일: 업로드한 아빠 사진) -->
+<!-- Open Graph / SNS 미리보기 -->
 <meta property="og:url" content="https://belthera-proxy-api.vercel.app/external-gate.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Belthera 감정리딩 타로">
-<meta property="og:description" content="하루 3분, 마음의 리듬을 읽어드립니다. 인앱에서도 안전 브라우저로 자동 전환!">
+<meta property="og:description" content="하루 3분, 마음의 리듬을 읽어드립니다. 인앱에서도 안전 브라우저로 전환!">
 <meta property="og:image" content="https://belthera-proxy-api.vercel.app/KakaoTalk_20250807_083829974.jpg">
 <meta property="og:image:width" content="800">
 <meta property="og:image:height" content="800">
@@ -33,6 +33,7 @@
   .btn2{flex:1;display:inline-block;text-align:center;padding:12px 12px;border-radius:12px;
        border:1px solid #374151;color:#e5e7eb;text-decoration:none;background:#0f172a}
   .hint{font-size:13px;color:#9ca3af;margin-top:8px}
+  .count{font-variant-numeric:tabular-nums}
   hr{border:none;border-top:1px solid #1f2937;margin:18px 0}
 </style>
 </head>
@@ -40,14 +41,16 @@
 <div class="wrap">
   <div class="card">
     <h1>보안 브라우저로 열어드릴게요</h1>
-    <p>현재 창(인앱 브라우저)에선 Google/로그인이 제한될 수 있어요.<br>안전한 브라우저로 이동 중…</p>
+    <p>현재 창(인앱 브라우저)에선 로그인/결제가 제한될 수 있어요.<br>
+       <span class="count" id="count">1.5</span>s 후 안전한 브라우저로 이동합니다.</p>
 
-    <!-- 메인 CTA: 최종 목적지( to= )로 이동 -->
-    <a id="openExternal" class="btn" target="_blank" rel="noopener">사파리/크롬으로 열기</a>
+    <!-- 메인 CTA -->
+    <a id="openExternal" class="btn" target="_blank" rel="noopener">사파리/크롬으로 바로 열기</a>
 
     <div class="row">
       <a id="copyLink" class="btn2" href="#">링크 복사</a>
       <a id="openNew" class="btn2" target="_blank" rel="noopener">새 탭으로 열기</a>
+      <a id="stopAuto" class="btn2" href="#">자동 이동 취소</a>
     </div>
 
     <p id="iosHint" class="hint" style="display:none">iOS 정책상 자동 실행이 막힐 수 있어요. 버튼 한 번만 눌러 주세요.</p>
@@ -59,20 +62,20 @@
       <a class="btn2" href="https://m.expert.naver.com/expert/profile/home?storeId=100055123" target="_blank" rel="noopener">🌟 네이버 엑스퍼트 상담</a>
     </div>
 
-    <p class="hint">안되면 오른쪽 위 메뉴(⋯) → “기타 브라우저로 열기” 또는 공유하기 → “사파리로 열기”를 선택하세요.</p>
+    <p class="hint">안되면 오른쪽 위 메뉴(⋯) → “기타 브라우저로 열기” 또는 공유하기 → “사파리로 열기”.</p>
   </div>
 </div>
 
 <script>
 (function(){
   const qs = new URLSearchParams(location.search);
-  // 최종 목적지 URL (?to=) — 없을 때는 서비스 홈으로
   const target = qs.get('to') || 'https://belthera-proxy-api.vercel.app/';
-
   const btn = document.getElementById('openExternal');
   const btnCopy = document.getElementById('copyLink');
   const btnNew = document.getElementById('openNew');
+  const btnStop = document.getElementById('stopAuto');
   const iosHint = document.getElementById('iosHint');
+  const counter = document.getElementById('count');
 
   btn.href = target;
   btnNew.href = target;
@@ -84,34 +87,31 @@
     /(kakao|line|fbav|instagram|naver|daum|wv)/.test(ua) ||
     (window.navigator.standalone === false);
 
-  // 인앱이 아니면 바로 목적지로
-  if (!isInApp) {
-    location.replace(target);
-    return;
-  }
-
-  if (isAndroid) {
-    // ✅ ANDROID: 크롬 인텐트로 강제 외부 브라우저 열기 (대부분 자동 성공)
-    const noScheme = target.replace(/^https?:\/\//, '');
-    const intent =
-      `intent://${noScheme}#Intent;scheme=https;package=com.android.chrome;` +
-      `S.browser_fallback_url=${encodeURIComponent(target)};end`;
-    location.href = intent;
-    // 실패 대비 버튼 유지
-    setTimeout(()=>{/* 버튼은 기본 보임 */}, 600);
-  } else if (isIOS) {
-    // ⛔ iOS는 자동 실행 제한 → 힌트 + 사용자 제스처 감지로 새 탭 오픈 시도
-    iosHint.style.display = 'block';
-    function tryOpenOnce(){
-      window.open(target, '_blank', 'noopener');
-      document.removeEventListener('touchstart', tryOpenOnce);
-      document.removeEventListener('click', tryOpenOnce);
+  // ⏱ 카운트다운 + 1.5s 후 자동 이동 시도 (버튼은 항상 보이게 유지)
+  let t = 1.5;
+  let auto = true;
+  const timer = setInterval(()=>{
+    t = Math.max(0, (t - 0.1));
+    counter.textContent = t.toFixed(1);
+    if (t <= 0) {
+      clearInterval(timer);
+      if (!auto) return;
+      if (isAndroid && isInApp) {
+        const noScheme = target.replace(/^https?:\\/\\//, '');
+        const intent =
+          `intent://${noScheme}#Intent;scheme=https;package=com.android.chrome;` +
+          `S.browser_fallback_url=${encodeURIComponent(target)};end`;
+        location.href = intent;
+      } else if (isIOS && isInApp) {
+        iosHint.style.display = 'block';
+        window.open(target, '_blank', 'noopener');
+      } else {
+        // 일반 브라우저에서도 바로 이동하지 말고, 사용자가 버튼 클릭해서 이동하도록 유지
+      }
     }
-    document.addEventListener('touchstart', tryOpenOnce, {once:true});
-    document.addEventListener('click', tryOpenOnce, {once:true});
-  } else {
-    location.href = target;
-  }
+  }, 100);
+
+  btnStop.addEventListener('click', (e)=>{ e.preventDefault(); auto = false; counter.textContent = '중지'; });
 
   // 링크 복사
   btnCopy.addEventListener('click', async (e)=>{
